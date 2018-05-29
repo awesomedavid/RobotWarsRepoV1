@@ -4,8 +4,11 @@ import java.util.ArrayList;
 
 import objects.Point;
 import objects.Robot;
+import values.WorldValues;
 import world.World;
 import world.cells.Cell;
+import world.cells.feature.Beacon;
+import world.cells.terrain.WaterDeep;
 
 public class PathGenerator {
 
@@ -16,10 +19,10 @@ public class PathGenerator {
 	private static ArrayList<WrapperCell> openSet;
 	private static ArrayList<WrapperCell> closedSet;
 
-	private static WrapperCell[][] map;
-	
+	private static WrapperCell[][] map = new WrapperCell[World.getWidth()][World.getHeight()];;
+
 	public PathGenerator() {
-		
+
 	}
 
 	public static ArrayList<Cell> getCellPath(Point startPoint, Point endPoint) {
@@ -28,23 +31,36 @@ public class PathGenerator {
 
 		ArrayList<WrapperCell> tempWrapperPath = getWrapperPath(startPoint, endPoint);
 
+		if (tempWrapperPath == null) {
+			return null;
+		}
+
 		for (int i = 0; i < tempWrapperPath.size(); i++) {
-			tempCellPath.add(tempWrapperPath.get(i));
+			tempCellPath.add(tempWrapperPath.get(i).getCell());
 		}
 
 		return tempCellPath;
 	}
 
 	public static ArrayList<WrapperCell> getWrapperPath(Point startPoint, Point endPoint) {
-		
-		start = (WrapperCell) World.getCell(startPoint);
-		end = (WrapperCell) World.getCell(endPoint);
-
-		openSet.add(start);
 
 		map = getMap();
 
+		openSet = new ArrayList<WrapperCell>();
+		closedSet = new ArrayList<WrapperCell>();
+
+		start = map[startPoint.getX()][startPoint.getY()];
+		end = map[endPoint.getX()][endPoint.getY()];
+
+		if (end.getCell().hasFeature(Beacon.class) || end.getCell().hasImpassableTerrain() || end.getCell().hasUnit()) {
+			return null;
+		}
+
+		openSet.add(start);
+
 		addAllNeighbors();
+
+		int tries = 100000;
 
 		boolean done = false;
 
@@ -74,11 +90,24 @@ public class PathGenerator {
 
 				for (int i = 0; i < neighbors.size(); i++) {
 
+					tries--;
+
+					if (tries < 0) {
+						System.out.println("lag");
+						return null;
+					}
+
 					WrapperCell neighbor = neighbors.get(i);
+					Cell c = neighbor.getCell();
 
-					if (!closedSet.contains(neighbor) && !neighbor.hasImpassableTerrain()) {
+					if (!closedSet.contains(neighbor) && !c.hasFeature(Beacon.class)
+							&& !c.hasImpassableTerrain() ) {
 
-						float tempG = current.getG() + 1;
+						float tempG = current.getG() + c.getDifficulty();
+						
+						if(c.hasFeature()) {
+							tempG += (c.getFeature().getCurHealth());
+						}
 
 						boolean newPath = false;
 
@@ -99,9 +128,10 @@ public class PathGenerator {
 						}
 					}
 				}
-
 			}
-		} while (!done);
+		} while (!done && tries > 0);
+
+		// System.out.println("shit");
 
 		return null;
 	}
@@ -122,8 +152,10 @@ public class PathGenerator {
 
 	}
 
-	public static float heuristic(Cell a, Cell b) {
-		return (float) Math.sqrt(Math.pow((a.getX() - b.getX()), 2) + Math.pow((a.getY() - b.getY()), 2));
+	public static float heuristic(WrapperCell cell1, WrapperCell cell2) {
+
+		return (Math.abs(cell1.getCell().getX() - cell2.getCell().getX())
+				+ Math.abs(cell1.getCell().getY() - cell2.getCell().getY())) * WorldValues.EASY;
 	}
 
 	public static void addAllNeighbors() {
@@ -137,13 +169,15 @@ public class PathGenerator {
 
 	public static WrapperCell[][] getMap() {
 
-		WrapperCell[][] tempMap = null;
+		WrapperCell[][] tempMap = new WrapperCell[World.getWidth()][World.getHeight()];
 
 		for (int i = 0; i < World.getWidth(); i++) {
 			for (int j = 0; j < World.getHeight(); j++) {
-				tempMap[i][j] = (WrapperCell) World.getCell(i, j);
+				tempMap[i][j] = new WrapperCell(World.getCell(i, j), tempMap);
 			}
 		}
+
+		map = tempMap;
 
 		return tempMap;
 	}
