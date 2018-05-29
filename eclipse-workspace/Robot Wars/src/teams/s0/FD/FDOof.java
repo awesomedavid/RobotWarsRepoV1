@@ -35,7 +35,6 @@ public class FDOof extends FDRobot {
 	@Override
 	public void action() {
 		timer++;
-		nice;
 		if (timer % 500 == 499) {
 			buy(new UpgradePlating(this));
 			buy(new UpgradeShield(this));
