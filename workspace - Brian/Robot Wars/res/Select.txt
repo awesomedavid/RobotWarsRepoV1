@@ -1,0 +1,2 @@
+teams.s0.FD.FDTeam
+teams.starter.basic.BasicBalancedTeam

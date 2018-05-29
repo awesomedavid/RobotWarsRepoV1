@@ -1,0 +1,263 @@
+Version 0.5.1
+--------------
+
+New Weapons
+	Repair Beam - a powerful healing primary that cannot be used on the wielder.  No ammo; uses heat.
+	Blink - a short range teleporter secondary.  No ammo; uses heat; long cooldown.
+
+Repair kit use time decreased (150 to 120)
+Repair kit heal amount decreased (100 to 80)
+Repair kit animation added
+
+Repair Kit and Repair Beam can now both repair health, plating, and shields (in that order)
+
+Killing a robot now gives 2 points (up from 1)
+
+Moved Resolution Data to Settings
+
+Bug fixes
+ - Robot action loop on higher speeds fixed (THANKS BEN LAGNESE)
+ - Robot Selection now takes multiple teams per package  (THANKS AGAIN BEN LAGNESE)
+ - Shotguns will no longer deal double damage on a critical hit.
+ - Artillery scatter fixed
+  		- 200% accuracy means you always hit the intended square
+  		- 100% accuracy means standard scatter
+  		- 0% accuracy means double scatter
+  
+Version 0.4.1
+--------------
+
+Balance Changes
+ - Smoke grenade range reduced (50 to 30)
+ - Repair Kit use time increased (50 to 150)
+ - Shield recovery activation time reduced (240 to 120)
+ - Shotgun reload/cooldown increased by 10 (50 to 60)
+ - Machine gun cooldown time increased by 1 (6 to 7)
+ - Respawn time base increased (600 to 1200)
+ 
+The feature that is a block of stone mountain has been renamed from "Stone" to "Mountain" to help distinguish it from other stone objects
+
+Trees and Mountains can be destroyed by normal attacks.  Only drop resources when cleared via mine/chop actions.
+
+Stone and metal have a tint based on mountain/robot color
+
+ROBOT SELECTION SCREEN
+   - Thanks AARON and PETER.
+
+Artillery added
+  - High damage, long range.   Long cooldown and aim time.   Area damage.  Can hit allies.
+  - Note that its values ARE NOT balanced yet.  Might be too good.  Might be poopy.
+
+Added x10 speed mode (0)
+
+Heat sink no longer increases shield regen
+
+Bug Fixes
+	Metal no longer rotates each time a robot dies
+	Artillery shots no longer cause the game to crash when fired with a positive accuracy modifier
+	Victory screen spaces out team names based on length correctly
+
+
+Version 0.3.3
+--------------
+
+Camera on this version FULLY FIXED - thanks BEN LAGNESE
+POINT_GAIN_FREQUENCY changed from 60 to 120 (half point gain rate)
+Walls are built faster
+All wall health increased
+Wood walls have less durability and build faster than Stone Walls
+Fixed an error - Sniper drop was accidentally at -.01  It is now -.03
+Victory Screen
+
+Version 0.3.2
+--------------
+
+Weight system changed.  No longer acts as a hard cap.  Your weight is how much you can carry without penalty. 
+Going above your weight cap is allowed - up to double capacity - reducing move speed significantly.
+
+For example, consider a robot with 10 weight capacity
+Carrying 5 weight = 100% movement
+Carrying 10 weight = 100% movement
+Carrying 11 weight = 90% movement
+Carrying 15 weight = 50% movement
+Carrying 20 weight = 0% movement  (immobilized)
+
+This move penalty is applied after all other modifiers
+
+Weight capacity for robots is currently set at 10, 15, and 20.
+
+Current weight is now displayed on the UI.  It is color coded as follows:
+White - below capacity
+Green - at capacity exactly
+Yellow - over capacity
+Red - fully encumbered (cannot move)
+
+Sniper rifle damage type changed from PIERCE to NORMAL
+Sniper rifle base damage reduced from 35 to 30
+Sniper rifle aim time increased from 50 to 120
+Sniper rifle reload time decreased from 500 to 250
+Sniper rifle ammo reduced from 3 to 1
+Sniper rifle ranged reduced from 25 to 20
+
+MG damage increased from 2 to 3
+MG cooldown increased from 5 to 6
+
+Added two upgrades
+	UpgradePierce - converts weapon damage from NORMAL to PIERCE
+	UpgradeEnergy - converts weapon damage from NORMAL to ENERGY
+
+Added hard caps for maximum values (health, plating, shield, dodge, accuracy, processor)
+Some do not have hard caps (speed, heat regen), but implicitly suffer from diminishing marginal utility
+See RobotValues for numbers
+	
+Capture rate slowed from 200 to 500 frames
+
+Version 0.3.1
+--------------
+
+To upgrade your robot, you now use the buy(Equipment e) method at any point
+   - During the first frame, this is instant
+   - Afterward, it applies an action to upgrade, which takes time
+
+Stating metal reduced from 200 to 100
+
+Accuracy upgrade reduced from 15% to 10%
+
+Added the Smoke Grenade (Secondary)
+	- Long range, limited use weapon that creates large areas of concealment
+	- Has a pretty sweet animation
+	- Values subject to change
+
+Reduced penalty for concealment to 25% / 50%
+	final public static float CONCEALMENT_PARTIAL_PENALTY = .25f;	// 50% miss chance if they have partial concealment (2-3 corners)
+	final public static float CONCEALMENT_TOTAL_PENALTY = .5f;		// 50% miss chance if they have total concealment (4 corners)
+	final public static float COVER_PARTIAL_PENALTY = .5f;			// 50% miss chance if they have partial cover (2-3 corners)
+	final public static float COVER_FULL_PENALTY = 1f;				// 100% miss chance if they have full cover  (4 corners)
+
+Added scrap(Equipment e) method in Robot (and corresponding Action)
+	- Refunds 50% of the cost of an item.
+	- No refund on limited use items.
+
+Weapon's canShoot(GameObject) method changed to canUse(GameObject)
+
+Added a Setting to toggle debug information
+
+Added a method in cell called setDebugNum(int num)
+  - Sets that number to be displayed in a given cell
+  - Set to -1 to display nothing
+
+Small Tweaks / Bug Fixes / Code Style
+ - Cleaned up equip / unequip methods.  More elegant implementation.
+ - Reworked animation hierarchies to make them better
+ 
+ 
+
+Version 0.2.2 - [May 10th, 2018]
+--------------
+
+Small Additions / Fixes
+	- Title screen load bar fixed
+	
+Shotgun implemented
+	- High damage at close range;  drops off in accuracy quickly
+	- Fires multiple shots at once, each of which can hit/miss/crit independently
+	- Damage displayed is the sum of those shots
+
+Weapon Balance
+	- Updated many weapon values!
+	- See spreadsheet for details
+
+
+Version 0.2.1 - [May 7th, 2018]
+--------------
+
+Small Additions / Fixes
+	- Robots reduce heat twice as fast while in water
+	- When a weapon is discarded, its weight is accurately removed
+	- Weapons show a bar for ammo + reloading on the main HUD
+	- Weapons show a bar overhead when reloading
+
+Audio
+	- Songs and sound effects are partially implemented
+	- Turn them on and off in Settings
+
+Accuracy System
+   - Ranged weapons have a base accuracy level (0 to 100%)
+   - For each cell of distance traveled, the hit chance is decreased by  accDrop
+   - Example:  MG has 95% base accuracy and 3% accDrop.  When it shoots 5 tiles away, it has a 20% (95% - 5 tiles * 3% accDrop) miss chance.
+   - A robot can also have a dodge value, which is added to the miss chance of all attacks against it
+   
+Weapon Balance
+	- Laser no longer requires ammo
+	- Updated many weapon values!
+	
+Added Splash Screen
+
+Version 0.1.1 - [May 3rd, 2018]
+--------------
+
+	Healthbar Revision
+		No longer "stacked" - shows the overall health % and amount of each section
+	
+	Added team accessors
+	
+		public int getBaseX()
+		public int getBaseY()
+		public Point getBaseLocation()
+
+
+	Added unit accessors
+	
+		public float getCurDurability()		// Durability = Health + Plating + Shield
+		public float getMaxDurability()
+
+
+	Shot Calculator Fixes
+	
+		Working, according to Aaron.  He is 98% sure.  If you break it, he'll be super salty.  Ben.
+		
+		
+	Display Method
+	
+		Each robot can call the display method to draw on the screen
+		Render - and many other methods - are now FINAL
+	
+	
+	Stop Action
+	
+		A robot can now take the stop action to do nothing for 1 frame
+		Call it using the stop() method in unit
+	
+	
+	Primary vs. Secondary:
+	
+	   Each robot has one PRIMARY slot and one SECONDARY slot.  
+	   Secondary weapons tend to do less damage (or no damage) but provide utility.
+	   Secondary weapons can go in either slot.
+	   
+	   Primary Weapons:  Machine Gun, Laser, Sniper Rifle
+	   Secondary Weapons:  Chainsaw, Drill, RepairKit
+	   
+	   Weapons now are named primaryMachineGun, secondaryRepairKit rather than weaponMachineGun
+	
+	
+	New Gear:	
+	
+		SecondaryChainsaw 		Deals melee damage;  allows robot to chop down trees
+		UpgradeHeatSink  		Reduces heat by 0.1 per frame
+		UpgradeProcessor		Increases robot's processing power by 500;  reduces heat generated from overclocking
+	
+	
+	Strategy()
+	
+		Each team now must implement a strategy() method that is called every frame
+		The costs of operations from this frame are distributed equally across robots.
+		
+		
+	Animations are implemented.  If you'd like to animate your own images, follow the starting robot template
+
+
+Version 0.1
+--------------
+	
+	First alpha release
