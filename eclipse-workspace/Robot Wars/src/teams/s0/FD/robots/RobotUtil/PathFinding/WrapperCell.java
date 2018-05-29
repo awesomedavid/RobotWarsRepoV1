@@ -5,44 +5,88 @@ import java.util.ArrayList;
 import world.World;
 import world.cells.Cell;
 
-public class WrapperCell extends Cell {
+public class WrapperCell {
 
 	private float f;
 	private float g;
 	private float h;
 
+	private Cell cell;
+
+	private WrapperCell[][] map;
+
 	private ArrayList<WrapperCell> neighbors;
 	private WrapperCell previous;
 
-	public WrapperCell(int x, int y) {
-		super(x, y);
+	public WrapperCell(Cell cell, WrapperCell[][] map) {
+		this.cell = cell;
+		this.map = map;
+		
+		neighbors = new ArrayList<WrapperCell>();
+
+		if (map == null) {
+			System.out.println("sheeeeeit");
+		}
 		// TODO Auto-generated constructor stub
 	}
 
 	public void addNeighbors() {
+		
+		if(cell == null) {
+			System.out.println("cell");
+		}
+		if(map == null) {
+			System.out.println("map");
+		}
+		
 
-		if (inbounds(getX() + 1, getY())) {
-			neighbors.add((WrapperCell) World.getCell(getX() + 1, getY()));
+		if (inbounds(cell.getX() + 1, cell.getY())) {
+			neighbors.add(map[cell.getX() + 1][cell.getY()]);
 		}
-		if (inbounds(getX() - 1, getY())) {
-			neighbors.add((WrapperCell) World.getCell(getX() - 1, getY()));
+		if (inbounds(cell.getX() - 1, cell.getY())) {
+			neighbors.add(map[cell.getX() - 1][cell.getY()]);
 		}
-		if (inbounds(getX(), getY() + 1)) {
-			neighbors.add((WrapperCell) World.getCell(getX(), getY() + 1));
+		if (inbounds(cell.getX(), cell.getY() + 1)) {
+			neighbors.add(map[cell.getX()][cell.getY() + 1]);
 		}
-		if (inbounds(getX(), getY() - 1)) {
-			neighbors.add((WrapperCell) World.getCell(getX() + 1, getY() - 1));
+		if (inbounds(cell.getX(), cell.getY() - 1)) {
+			neighbors.add(map[cell.getX()][cell.getY() - 1]);
 		}
 
 	}
 
 	public ArrayList<WrapperCell> getNeighbors() {
+		
+		if(neighbors == null) {
+			System.out.println("III");
+			addNeighbors();
+		}
 		return neighbors;
 	}
 
 	public boolean inbounds(int a, int b) {
 
 		return a >= 0 && a < World.getWidth() && b >= 0 && b < World.getHeight();
+	}
+
+	public Cell getCell() {
+		return cell;
+	}
+
+	public void setCell(Cell cell) {
+		this.cell = cell;
+	}
+
+	public WrapperCell[][] getMap() {
+		return map;
+	}
+
+	public void setMap(WrapperCell[][] map) {
+		this.map = map;
+	}
+
+	public void setNeighbors(ArrayList<WrapperCell> neighbors) {
+		this.neighbors = neighbors;
 	}
 
 	public WrapperCell getPrevious() {
