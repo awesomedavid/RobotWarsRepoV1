@@ -32,7 +32,7 @@ public class Settings
 	public static boolean showMiniMap = true;
 	public static boolean showHUD = true;
 	public static boolean showDebug = true;
-	public static boolean showPlayerDisplay = false;
+	public static boolean showPlayerDisplay = true;
 	
 	// Graphics Settings
 	public static boolean alphaBlending = true;

@@ -2,6 +2,7 @@ package teams.s0.FD;
 
 import java.util.ArrayList;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.util.pathfinding.PathFinder;
@@ -14,8 +15,12 @@ import objects.GameObject;
 import objects.Point;
 import objects.Robot;
 import objects.Unit;
+import teams.s0.FD.FDTeam;
 import teams.s0.FD.robots.RobotUtil.PathFinding.PathGenerator;
+import values.CoreValues;
+import values.WorldValues;
 import world.World;
+import world.cells.Cell;
 import world.cells.feature.Beacon;
 import world.cells.feature.Mountain;
 import world.cells.feature.Tree;
@@ -29,8 +34,9 @@ public abstract class FDRobot extends Robot {
 	final int BOUNDARY = 5;
 	final int JITTER_COOLDOWN_MAX = 20;
 	final int JITTER_COOLDOWN_MIN = 10;
+	private ArrayList<Cell> path;
 
-//	PathGenerator pathGenerator = new PathGenerator();
+	// PathGenerator pathGenerator = new PathGenerator();
 
 	public FDRobot(int x, int y, int id, int myID) throws SlickException {
 		super(x, y, id, myID);
@@ -47,6 +53,7 @@ public abstract class FDRobot extends Robot {
 			useSecondary(target);
 		}
 	}
+
 	// Reload primary
 	public void reloadIfNeeded() {
 		if (hasPrimary() && getPrimary().canReload() && getPrimary().needsReload()) {
@@ -85,8 +92,8 @@ public abstract class FDRobot extends Robot {
 			move();
 		} else {
 			abandonMoveCounter++;
-			turnRandom();
-			attemptMove();
+			// turnRandom();
+			// attemptMove();
 		}
 	}
 
@@ -94,34 +101,64 @@ public abstract class FDRobot extends Robot {
 	public void wander() {
 		abandonMoveCounter = 0;
 
-		shiftGoal();
-		turn(goal);
+		if (getTimer() % 4 == 0) {
 
-		if (jitter > 0) {
-			jitter--;
-		}
-
-		if (jitter == 0) {
-			jitter = Utility.random(JITTER_COOLDOWN_MIN, JITTER_COOLDOWN_MAX);
-			goal = Direction.getRandom();
+			shiftGoal();
 			turn(goal);
+			attemptMove();
+
 		}
 
-		attemptMove();
+		// if (jitter > 0) {
+		// jitter--;
+		// }
+		//
+		// if (jitter == 0) {
+		// jitter = Utility.random(JITTER_COOLDOWN_MIN, JITTER_COOLDOWN_MAX);
+		// goal = Direction.getRandom();
+		// turn(goal);
+		// }
+
 	}
 
 	public void shiftGoal() {
-		// if (getX() < getNearestUncappedBeacon().getX()) {
-		// goal = Direction.EAST;
-		// } else if (getX() > getNearestUncappedBeacon().getX()) {
-		// goal = Direction.WEST;
-		// } else if (getY() < getNearestUncappedBeacon().getY()) {
-		// goal = Direction.SOUTH;
-		// } else if (getY() > getNearestUncappedBeacon().getY()) {
-		// goal = Direction.NORTH;
-		// }
 
-//		System.out.println(PathGenerator.getCellPath(getPoint(), getNearestUncappedBeacon()).get(0).getX());
+		// ArrayList<Cell> tempPath = PathGenerator.getCellPath(getPoint(),
+		// World.getCell(World.getWidth() - 1, World.getHeight() - 1).getPoint());
+
+		if (getTimer() % 60 == 0) {
+			ArrayList<Cell> tempPath = PathGenerator.getCellPath(getPoint(),
+					World.getCell(World.getWidth() - 1, World.getHeight() - 1).getPoint());
+
+			if (tempPath != null) {
+				path = tempPath;
+			}
+		}
+
+		// ArrayList<Cell> path = PathGenerator.getCellPath(getPoint(),
+		// getNearestUncappedBeacon());
+
+		if (path == null) {
+			return;
+		}
+
+		if (path.size() > 1) {
+
+			Cell c = path.get(path.size() - 1);
+
+			if (getX() < c.getX()) {
+				goal = Direction.EAST;
+			} else if (getX() > c.getX()) {
+				goal = Direction.WEST;
+			} else if (getY() < c.getY()) {
+				goal = Direction.SOUTH;
+			} else if (getY() > c.getY()) {
+				goal = Direction.NORTH;
+			}
+
+			path.remove(c);
+		}
+		// System.out.println(c.getX() + " " + c.getY());
 	}
 
 	// This method makes the robot move - awkwardly - toward the target
@@ -166,6 +203,23 @@ public abstract class FDRobot extends Robot {
 
 	public void display(Graphics g) {
 
+		if (getTimer() % 1 == 0) {
+
+			// ArrayList<Cell> path = PathGenerator.getCellPath(getPoint(),
+			// World.getCell(45, 50).getPoint());
+			// ArrayList<Cell> path = PathGenerator.getCellPath(getPoint(),
+			// getNearestUncappedBeacon());
+
+			if (path == null) {
+				return;
+			}
+
+			for (int i = 0; i < path.size(); i++) {
+				Cell c = path.get(i);
+				g.setColor(new Color(0, 0, 200, 70));
+				g.fillRect(c.getXPixel(), c.getYPixel(), CoreValues.CELL_SIZE, CoreValues.CELL_SIZE);
+			}
+		}
 	}
 
 	public Point getNearestUncappedBeacon() {

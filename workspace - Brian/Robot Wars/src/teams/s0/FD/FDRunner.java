@@ -33,11 +33,20 @@ public class FDRunner extends FDRobot {
 
 	@Override
 	public void action() {
+		timer++;
+
+		if (timer % 500 == 499) {
+
+			buy(new UpgradePlating(this));
+			buy(new UpgradeShield(this));
+		}
+
 		Unit target = getNearestEnemy();
+
 		shoot(target);
 		reloadIfNeeded();
 		pickupIfAble();
-		spinToWin();
+		//spinToWin();
 		wander();
 
 	}
